@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Videa AI - Crie vídeos com inteligência artificial</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#100b20;color:white;font-family:Arial,sans-serif}
+header{padding:22px 7%;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #302348}
+.logo{font-size:27px;font-weight:bold;color:#c5a3ff}
+nav a{color:white;text-decoration:none;margin-left:15px;font-size:14px}
+.hero{text-align:center;padding:75px 20px 55px}
+.hero h1{font-size:42px;margin-bottom:15px}
+.hero h1 span{color:#bd8cff}
+.hero p{color:#c5bbd7;font-size:17px;line-height:1.6}
+button{background:linear-gradient(90deg,#8b45e8,#c15bdb);border:0;color:white;padding:14px 24px;border-radius:10px;font-weight:bold;font-size:15px;cursor:pointer}
+.generator{max-width:650px;margin:25px auto;background:#211735;padding:25px;border-radius:18px;text-align:left}
+label{display:block;margin:15px 0 8px}
+textarea,select{width:100%;padding:14px;border-radius:9px;border:1px solid #59436e;background:#160f25;color:white;font-size:15px}
+.generator button{width:100%;margin-top:18px}
+#mensagem{text-align:center;color:#d4b8ff;margin-top:15px}
+section{padding:55px 7%;text-align:center}
+h2{font-size:30px}
+.features,.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px;margin-top:30px}
+.card{background:#211735;padding:25px;border:1px solid #49335f;border-radius:15px}
+.card h3{color:#d0aaff}
+.price{font-size:27px;font-weight:bold;margin:18px 0}
+.card p{color:#c5bbd7;line-height:1.5}
+.card button{width:100%;margin-top:12px}
+.popular{border:2px solid #b77cff}
+footer{text-align:center;padding:30px;color:#a99bbd;border-top:1px solid #302348}
+@media(max-width:600px){.hero h1{font-size:32px}nav a{margin-left:7px;font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">✦ VIDEA AI</div>
+<nav>
+<a href="#criar">Criar vídeo</a>
+<a href="#planos">Planos</a>
+</nav>
+</header>
+
+<div class="hero">
+<h1>Sua ideia. Seu vídeo. <span>Sua criação.</span></h1>
+<p>Transforme textos e imagens em vídeos incríveis com inteligência artificial.<br>Crie conteúdos para redes sociais, negócios e muito mais.</p>
+<button onclick="document.getElementById('criar').scrollIntoView({behavior:'smooth'})">Começar a criar</button>
+
+<div class="generator" id="criar">
+<h2>Crie seu vídeo com IA</h2>
+<label>Descreva o vídeo que deseja criar</label>
+<textarea id="prompt" rows="4" placeholder="Exemplo: Uma mulher caminhando em uma praia ao pôr do sol..."></textarea>
+<label>Formato do vídeo</label>
+<select id="formato">
+<option>Vertical 9:16</option>
+<option>Horizontal 16:9</option>
+<option>Quadrado 1:1</option>
+</select>
+<label>Duração desejada</label>
+<select id="duracao">
+<option>5 segundos</option>
+<option>10 segundos</option>
+<option>20 segundos</option>
+</select>
+<button onclick="gerar()">Gerar meu vídeo</button>
+<div id="mensagem"></div>
+</div>
+</div>
+
+<section>
+<h2>O que você pode criar?</h2>
+<div class="features">
+<div class="card"><h3>Vídeos realistas</h3><p>Transforme suas ideias em cenas com aparência cinematográfica.</p></div>
+<div class="card"><h3>Imagem em movimento</h3><p>Dê vida às suas imagens e fotografias.</p></div>
+<div class="card"><h3>Vozes e narração</h3><p>Crie conteúdos com narração em português.</p></div>
+<div class="card"><h3>Personagens com IA</h3><p>Crie personagens para seus conteúdos e histórias.</p></div>
+</div>
+</section>
+
+<section id="planos">
+<h2>Escolha seu plano</h2>
+<p>Encontre o plano ideal para suas criações.</p>
+<div class="plans">
+<div class="card">
+<h3>Básico</h3>
+<div class="price">R$ 79,90<small>/mês</small></div>
+<p>Para começar a criar.</p>
+<p>Acesso à plataforma</p>
+<p>Créditos mensais de geração</p>
+<button onclick="assinar('Básico')">Escolher plano</button>
+</div>
+<div class="card popular">
+<h3>Criador</h3>
+<div class="price">R$ 149,90<small>/mês</small></div>
+<p>Para criadores de conteúdo.</p>
+<p>Mais créditos mensais</p>
+<p>Recursos avançados</p>
+<button onclick="assinar('Criador')">Escolher plano</button>
+</div>
+<div class="card">
+<h3>Profissional</h3>
+<div class="price">R$ 260,00<small>/mês</small></div>
+<p>Para uso profissional.</p>
+<p>Alto volume de créditos</p>
+<p>Recursos avançados</p>
+<button onclick="assinar('Profissional')">Escolher plano</button>
+</div>
+<div class="card">
+<h3>Empresarial</h3>
+<div class="price">R$ 530,00<small>/mês</small></div>
+<p>Para empresas e equipes.</p>
+<p>Mais capacidade de criação</p>
+<p>Atendimento prioritário</p>
+<button onclick="assinar('Empresarial')">Escolher plano</button>
+</div>
+</div>
+</section>
+
+<footer>
+<p>© 2026 Videa AI. Todos os direitos reservados.</p>
+<p>Sua criatividade não tem limites.</p>
+</footer>
+
+<script>
+function gerar(){
+const prompt=document.getElementById('prompt').value.trim();
+const mensagem=document.getElementById('mensagem');
+if(!prompt){
+mensagem.textContent='Escreva uma descrição para seu vídeo.';
+return;
+}
+mensagem.textContent='A plataforma está sendo preparada. O motor de geração de vídeos por IA ainda precisa ser conectado.';
+}
+function assinar(plano){
+alert('Você escolheu o plano '+plano+'. O sistema de pagamento será conectado em breve.');
+}
+</script>
+</body>
+</html>
