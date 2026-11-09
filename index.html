@@ -254,9 +254,11 @@ clienteSupabase.auth.onAuthStateChange(() => {
 
 atualizarConta();
 
-// Gerador de vídeos: motor de IA ainda será conectado.
-function gerar() {
+
+async function gerar() {
   const descricao = document.getElementById('prompt').value.trim();
+  const formatoSelecionado = document.getElementById('formato').value;
+  const duracaoSelecionada = document.getElementById('duracao').value;
   const mensagem = document.getElementById('mensagem');
 
   if (!descricao) {
@@ -264,9 +266,50 @@ function gerar() {
     return;
   }
 
+  const { data: sessao } = await clienteSupabase.auth.getSession();
+
+  if (!sessao.session) {
+    mensagem.textContent = 'Entre na sua conta antes de gerar um vídeo.';
+    return;
+  }
+
+  const formatos = {
+    'Vertical 9:16': 'vertical',
+    'Horizontal 16:9': 'horizontal',
+    'Quadrado 1:1': 'square'
+  };
+
+  const duracao = parseInt(duracaoSelecionada);
+
+  mensagem.textContent = 'Enviando seu pedido para a inteligência artificial...';
+
+  const { data, error } = await clienteSupabase.functions.invoke(
+    'gerar-video',
+    {
+      body: {
+        prompt: descricao,
+        duration: duracao,
+        format: formatos[formatoSelecionado]
+      }
+    }
+  );
+
+  if (error) {
+    mensagem.textContent = 'Não foi possível solicitar o vídeo. Tente novamente.';
+    console.error(error);
+    return;
+  }
+
+  if (!data || !data.success) {
+    mensagem.textContent = data?.error || 'Erro ao solicitar o vídeo.';
+    return;
+  }
+
   mensagem.textContent =
-    'O motor de geração de vídeos por IA será conectado na próxima etapa.';
+    'Pedido enviado! Seu vídeo está sendo criado. Código: ' +
+    data.project_id;
 }
+
 
 function assinar(plano) {
   alert('Você escolheu o plano ' + plano +
