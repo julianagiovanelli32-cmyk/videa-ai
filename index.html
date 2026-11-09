@@ -123,18 +123,154 @@ footer{text-align:center;padding:30px;color:#a99bbd;border-top:1px solid #302348
 <p>Sua criatividade não tem limites.</p>
 </footer>
 
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-function gerar(){
-const prompt=document.getElementById('prompt').value.trim();
-const mensagem=document.getElementById('mensagem');
-if(!prompt){
-mensagem.textContent='Escreva uma descrição para seu vídeo.';
-return;
+const clienteSupabase = window.supabase.createClient(
+  'https://xlwcwfqhcqlipbowrzra.supabase.co',
+  'sb_publishable_YG4W48cB3eR3Kh9Rm3rWfw_3-LED-QN'
+);
+
+// Área de cadastro e login
+const areaConta = document.createElement('section');
+areaConta.id = 'area-conta';
+areaConta.innerHTML = `
+  <div class="generator">
+    <h2>Minha conta Videa AI</h2>
+    <p id="estado-conta">Entre ou crie sua conta gratuitamente.</p>
+
+    <label>E-mail</label>
+    <input id="email-conta" type="email"
+      placeholder="Seu e-mail"
+      style="width:100%;padding:14px;border-radius:9px;
+      background:#160f25;color:white;border:1px solid #59436e">
+
+    <label>Senha</label>
+    <input id="senha-conta" type="password"
+      placeholder="Crie uma senha"
+      style="width:100%;padding:14px;border-radius:9px;
+      background:#160f25;color:white;border:1px solid #59436e">
+
+    <button onclick="cadastrarConta()" style="width:100%;margin-top:15px">
+      Criar minha conta
+    </button>
+
+    <button onclick="entrarConta()" style="width:100%;margin-top:10px">
+      Entrar
+    </button>
+
+    <button onclick="sairConta()" style="width:100%;margin-top:10px">
+      Sair da conta
+    </button>
+
+    <p id="mensagem-conta"></p>
+  </div>
+`;
+
+document.querySelector('header').after(areaConta);
+
+function mostrarMensagem(texto) {
+  document.getElementById('mensagem-conta').textContent = texto;
 }
-mensagem.textContent='A plataforma está sendo preparada. O motor de geração de vídeos por IA ainda precisa ser conectado.';
+
+async function cadastrarConta() {
+  const email = document.getElementById('email-conta').value.trim();
+  const senha = document.getElementById('senha-conta').value;
+
+  if (!email || !senha) {
+    mostrarMensagem('Preencha o e-mail e a senha.');
+    return;
+  }
+
+  if (senha.length < 6) {
+    mostrarMensagem('A senha precisa ter pelo menos 6 caracteres.');
+    return;
+  }
+
+  mostrarMensagem('Criando sua conta...');
+
+  const { data, error } = await clienteSupabase.auth.signUp({
+    email: email,
+    password: senha
+  });
+
+  if (error) {
+    mostrarMensagem(error.message);
+    return;
+  }
+
+  if (data.session) {
+    mostrarMensagem('Conta criada! Você já está conectado.');
+  } else {
+    mostrarMensagem('Conta criada! Confira seu e-mail para confirmar o cadastro.');
+  }
 }
-function assinar(plano){
-alert('Você escolheu o plano '+plano+'. O sistema de pagamento será conectado em breve.');
+
+async function entrarConta() {
+  const email = document.getElementById('email-conta').value.trim();
+  const senha = document.getElementById('senha-conta').value;
+
+  if (!email || !senha) {
+    mostrarMensagem('Informe seu e-mail e sua senha.');
+    return;
+  }
+
+  mostrarMensagem('Entrando...');
+
+  const { error } = await clienteSupabase.auth.signInWithPassword({
+    email: email,
+    password: senha
+  });
+
+  if (error) {
+    mostrarMensagem(error.message);
+  } else {
+    mostrarMensagem('Login realizado com sucesso!');
+  }
+}
+
+async function sairConta() {
+  const { error } = await clienteSupabase.auth.signOut();
+
+  if (error) {
+    mostrarMensagem(error.message);
+  } else {
+    mostrarMensagem('Você saiu da sua conta.');
+  }
+}
+
+async function atualizarConta() {
+  const { data } = await clienteSupabase.auth.getSession();
+  const usuario = data.session?.user;
+
+  document.getElementById('estado-conta').textContent =
+    usuario ? 'Conectado: ' + usuario.email :
+    'Entre ou crie sua conta gratuitamente.';
+}
+
+clienteSupabase.auth.onAuthStateChange(() => {
+  atualizarConta();
+});
+
+atualizarConta();
+
+// Gerador de vídeos: motor de IA ainda será conectado.
+function gerar() {
+  const descricao = document.getElementById('prompt').value.trim();
+  const mensagem = document.getElementById('mensagem');
+
+  if (!descricao) {
+    mensagem.textContent = 'Escreva uma descrição para seu vídeo.';
+    return;
+  }
+
+  mensagem.textContent =
+    'O motor de geração de vídeos por IA será conectado na próxima etapa.';
+}
+
+function assinar(plano) {
+  alert('Você escolheu o plano ' + plano +
+    '. O pagamento será conectado em uma próxima etapa.');
 }
 </script>
 </body>
