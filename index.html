@@ -305,9 +305,57 @@ async function gerar() {
     return;
   }
 
-  mensagem.textContent =
-    'Pedido enviado! Seu vídeo está sendo criado. Código: ' +
-    data.project_id;
+    mensagem.textContent = 'Pedido enviado! Seu vídeo está sendo criado. Aguarde...';
+
+  for (let tentativa = 0; tentativa < 60; tentativa++) {
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    const { data: resultado, error: erroConsulta } =
+      await clienteSupabase.functions.invoke('consultar-video', {
+        body: { project_id: data.project_id }
+      });
+
+    if (erroConsulta) {
+      continue;
+    }
+
+    if (resultado?.status === 'complete') {
+      const videoUrl = resultado.downloads?.[0]?.url;
+
+      if (!videoUrl) {
+        mensagem.textContent = 'Vídeo concluído, mas o endereço para assistir não foi encontrado.';
+        return;
+      }
+
+      mensagem.textContent = 'Seu vídeo está pronto! ❤️';
+
+      const video = document.createElement('video');
+      video.src = videoUrl;
+      video.controls = true;
+      video.playsInline = true;
+      video.style.maxWidth = '100%';
+      video.style.display = 'block';
+
+      mensagem.insertAdjacentElement('afterend', video);
+
+      const link = document.createElement('a');
+      link.href = videoUrl;
+      link.download = 'meu-video.mp4';
+      link.textContent = 'Baixar meu vídeo';
+
+      video.insertAdjacentElement('afterend', link);
+      return;
+    }
+
+    if (resultado?.status === 'error' || resultado?.status === 'canceled') {
+      mensagem.textContent = 'Não foi possível concluir a geração do vídeo.';
+      return;
+    }
+
+    mensagem.textContent = 'Seu vídeo ainda está sendo criado. Aguarde...';
+  }
+
+  mensagem.textContent = 'A geração está demorando. Tente consultar novamente mais tarde.';
 }
 
 
