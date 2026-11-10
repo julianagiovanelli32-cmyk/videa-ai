@@ -239,17 +239,54 @@ async function sairConta() {
   }
 }
 
+
 async function atualizarConta() {
   const { data } = await clienteSupabase.auth.getSession();
   const usuario = data.session?.user;
 
-  document.getElementById('estado-conta').textContent =
-    usuario ? 'Conectado: ' + usuario.email :
-    'Entre ou crie sua conta gratuitamente.';
+  const estado = document.getElementById('estado-conta');
+
+  let saldo = document.getElementById('saldo-creditos');
+
+  if (!saldo) {
+    saldo = document.createElement('div');
+    saldo.id = 'saldo-creditos';
+    saldo.style.cssText =
+      'background:#211735;padding:18px;margin-top:15px;border-radius:12px;text-align:center;color:#d0aaff;font-size:20px;font-weight:bold;';
+    estado.insertAdjacentElement('afterend', saldo);
+  }
+
+  if (!usuario) {
+    estado.textContent = 'Entre ou crie sua conta gratuitamente.';
+    saldo.textContent = '';
+    return;
+  }
+
+  estado.textContent = 'Conectado: ' + usuario.email;
+  saldo.textContent = 'Carregando créditos...';
+
+  const { data: registro, error } = await clienteSupabase
+    .from('creditos_usuarios')
+    .select('creditos')
+    .eq('user_id', usuario.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('Erro ao consultar créditos:', error);
+    saldo.textContent = 'Não foi possível carregar seus créditos.';
+    return;
+  }
+
+  if (!registro) {
+    saldo.textContent = 'Créditos não encontrados.';
+    return;
+  }
+
+  saldo.textContent = '✦ ' + registro.creditos + ' créditos disponíveis';
 }
 
 clienteSupabase.auth.onAuthStateChange(() => {
-  atualizarConta();
+  setTimeout(atualizarConta, 0);
 });
 
 atualizarConta();
