@@ -396,10 +396,31 @@ async function gerar() {
 }
 
 
-function assinar(plano) {
-  alert('Você escolheu o plano ' + plano +
-    '. O pagamento será conectado em uma próxima etapa.');
+async function assinar(plano) {
+  const { data: sessao } = await clienteSupabase.auth.getSession();
+
+  if (!sessao.session) {
+    alert('Entre na sua conta antes de assinar.');
+    return;
+  }
+
+  try {
+    const { data, error } = await clienteSupabase.functions.invoke(
+      'criar-assinatura',
+      { body: { plano: plano.toLowerCase() } }
+    );
+
+    if (error || !data?.link_pagamento) {
+      throw error || new Error('Falha ao criar assinatura');
+    }
+
+    window.location.href = data.link_pagamento;
+  } catch (erro) {
+    console.error(erro);
+    alert('Não foi possível iniciar o pagamento. Tente novamente.');
+  }
 }
+  
 </script>
 </body>
 </html>
