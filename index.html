@@ -267,7 +267,7 @@ async function atualizarConta() {
 
   const { data: registro, error } = await clienteSupabase
     .from('creditos_usuarios')
-    .select('creditos')
+    .select('creditos, creditos_mensais')
     .eq('user_id', usuario.id)
     .maybeSingle();
 
@@ -282,7 +282,8 @@ async function atualizarConta() {
     return;
   }
 
-  saldo.textContent = '✦ ' + registro.creditos + ' créditos disponíveis';
+const totalCreditos = (registro.creditos || 0) + (registro.creditos_mensais || 0);
+saldo.textContent = '✦ ' + totalCreditos + ' créditos disponíveis';
 }
 
 clienteSupabase.auth.onAuthStateChange(() => {
